@@ -112,7 +112,7 @@ $null = Lock-Process
 if ($Task) {
   $FullRunRequired = $false
   Write-ScriptMsg "Running Tasks for $($ServerCfg) ..."
-  $TasksSchedule = (Get-TaskConfig)
+  $TasksSchedule = (Get-TaskConfig $Server.Name)
   if (-not ($Server.AutoRestartOnCrash) -and (-not ($Server.AutoUpdates)) -and (-not ($Server.AutoRestart))) {
     Write-ScriptMsg "No Tasks to run, unregistering Tasks..."
     Unregister-Task

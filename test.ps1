@@ -67,7 +67,7 @@ class ServerStatus {
 
 }
 
-while(true){
+while($true){
 
   $ServerList = New-Object Collections.Generic.List[ServerStatus]
 

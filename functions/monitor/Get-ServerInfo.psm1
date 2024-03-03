@@ -14,7 +14,7 @@ function Get-ServerInfo {
   $ServerInfo.Name = $Server.Name
   $ServerInfo.PID = Get-PID $Server.Name
   $ServerInfo.Status = ($null -ne $ServerInfo.PID)
-  $ServerInfo.NextRestart = (Get-TaskConfig).NextRestart
+  $ServerInfo.NextRestart = (Get-TaskConfig $Server.Name).NextRestart
 
   $ServerProcess = Get-Process -ID $ServerInfo.PID -ErrorAction SilentlyContinue
   $ServerInfo.Status = ($null -ne $ServerProcess)

@@ -1,22 +1,27 @@
 function Get-TaskConfig {
+  param (
+    [Parameter(Mandatory)]
+    [string]$ServerName
+  )
+
   Write-ScriptMsg "Getting Tasks Schedule..."
   $OldDate = [datetime]::ParseExact("2000-01-01_00-00-00","yyyy-MM-dd_HH-mm-ss", $null)
 
-  $NextAlive = Get-IniValue -file ".\servers\$($Server.Name).INI" -category "Schedule" -key "NextAlive"
+  $NextAlive = Get-IniValue -file ".\servers\$($ServerName).INI" -category "Schedule" -key "NextAlive"
   if([string]::IsNullOrEmpty($NextAlive)) {
     $NextAlive = $OldDate
   } else {
     $NextAlive = [datetime]::ParseExact($NextAlive, $Global.DateTimeFormat, $null)
   }
 
-  $NextUpdate = Get-IniValue -file ".\servers\$($Server.Name).INI" -category "Schedule" -key "NextUpdate"
+  $NextUpdate = Get-IniValue -file ".\servers\$($ServerName).INI" -category "Schedule" -key "NextUpdate"
   if([string]::IsNullOrEmpty($NextUpdate)) {
     $NextUpdate = $OldDate
   } else {
     $NextUpdate = [datetime]::ParseExact($NextUpdate, $Global.DateTimeFormat, $null)
   }
 
-  $NextRestart = Get-IniValue -file ".\servers\$($Server.Name).INI" -category "Schedule" -key "NextRestart"
+  $NextRestart = Get-IniValue -file ".\servers\$($ServerName).INI" -category "Schedule" -key "NextRestart"
   if([string]::IsNullOrEmpty($NextRestart)) {
     $NextRestart = $OldDate
   } else {
