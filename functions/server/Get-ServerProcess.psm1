@@ -1,7 +1,7 @@
 function Get-ServerProcess {
   if ($Server.UsePID) {
     #Get the PID from the .PID market file.
-    $ServerPID = Get-PID
+    $ServerPID = (Get-PID $Server.Name)
     #If it returned 0, it failed to get a PID
     if ($null -ne $ServerPID) {
       $ServerProcess = Get-Process -ID $ServerPID -ErrorAction SilentlyContinue
