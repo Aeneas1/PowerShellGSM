@@ -51,6 +51,10 @@ Write-ScriptMsg "Working Directory : $(Get-Location)"
 
 Write-Host -Object "Start Monitor"
 
+#---------------------------------------------------------
+# Start Monitoring
+#---------------------------------------------------------
+
 class ServerStatus {
 
   [string]$Name
@@ -67,6 +71,8 @@ class ServerStatus {
 
 }
 
+$timeSinceCheck = 9999999999
+
 while($true){
 
   $ServerList = New-Object Collections.Generic.List[ServerStatus]
@@ -77,5 +83,45 @@ while($true){
 
   Write-ServerList $ServerList
 
-  Start-Sleep (60 * 5)
+  Start-Sleep ($Global.RefreshTime)
+  $timeSinceCheck = $timeSinceCheck + $Global.RefreshTime
+
+  if (($Global.TaskCheckFrequency * 60) -lt $timeSinceCheck) {
+    foreach ($Entry in (Get-ChildItem -Path ".\configs" -Include "*.psm1" -Recurse)) {
+
+      #Check if script is already running
+      if (Get-Lock $Entry.Basename) {
+        Break
+      }
+
+      Lock-Process $Entry.Basename
+
+      $Server = New-Object -TypeName PsObject -Property @{Name = $Entry.Basename }
+      Write-ScriptMsg "Check : $($Server.Basename)"
+      $TasksSchedule = (Get-TaskConfig $Server.Basename)
+
+      if ($Server.AutoRestartOnCrash) {
+        if (($TasksSchedule.NextAlive) -le (Get-Date)) {
+          Write-ScriptMsg "Checking Alive State"
+          if (-not (Get-ServerProcess)) {
+            Write-ScriptMsg "Server is Dead, Restarting..."
+            Start-Server
+            #$FullRunRequired = $true
+          }
+          else {
+            Write-ScriptMsg "Server is Alive"
+          }
+          Update-TaskConfig -Alive
+        }
+        else {
+          Write-ScriptMsg "Too soon for Alive check"
+        }
+      }
+      else {
+        Write-ScriptMsg "Alive check is disabled"
+      }
+    }
+
+    $timeSinceCheck = 0
+  }
 }

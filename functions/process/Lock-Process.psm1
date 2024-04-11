@@ -2,10 +2,11 @@ function Lock-Process {
   [CmdletBinding()]
   [OutputType([boolean])]
   param (
+    [string]$ServerName
   )
   try {
-    $null = New-Item -Path ".\servers\" -Name "$($Server.Name).LOCK" -ItemType "file" -Force -ErrorAction SilentlyContinue
-    Set-IniValue -file ".\servers\$($Server.Name).LOCK" -category "Lock" -key "TimeStamp" -value ((Get-Date).ToString($Global.DateTimeFormat))
+    $null = New-Item -Path ".\servers\" -Name "$($ServerName).LOCK" -ItemType "file" -Force -ErrorAction SilentlyContinue
+    Set-IniValue -file ".\servers\$($ServerName).LOCK" -category "Lock" -key "TimeStamp" -value ((Get-Date).ToString($Global.DateTimeFormat))
     Write-ScriptMsg "Locking Process."
   }
   catch {

@@ -62,6 +62,12 @@ $GlobalDetails = @{
   # Debug Mode (will not delete any logs or script files and will ignore script locks)
   # !!! DO NOT ENABLE IN PRODUCTION !!!
   Debug                = $false
+
+
+  #Monitor
+
+  #Refresh time of the monitor in seconds
+  RefreshTime = 10
 }
 
 #Create the object
