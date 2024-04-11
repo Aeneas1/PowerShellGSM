@@ -97,8 +97,8 @@ while($true){
       Lock-Process $Entry.Basename
 
       $Server = New-Object -TypeName PsObject -Property @{Name = $Entry.Basename }
-      Write-ScriptMsg "Check : $($Server.Basename)"
-      $TasksSchedule = (Get-TaskConfig $Server.Basename)
+      Write-ScriptMsg "Check : $($Entry.Basename)"
+      $TasksSchedule = (Get-TaskConfig $Entry.Basename)
 
       if ($Server.AutoRestartOnCrash) {
         if (($TasksSchedule.NextAlive) -le (Get-Date)) {
