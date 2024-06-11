@@ -14,6 +14,13 @@ function Get-TaskConfig {
     $NextAlive = [datetime]::ParseExact($NextAlive, $Global.DateTimeFormat, $null)
   }
 
+  $NextBackup = Get-IniValue -file ".\servers\$($ServerName).INI" -category "Schedule" -key "NextBackup"
+  if([string]::IsNullOrEmpty($NextBackup)) {
+    $NextBackup = $OldDate
+  } else {
+    $NextBackup = [datetime]::ParseExact($NextBackup, $Global.DateTimeFormat, $null)
+  }
+
   $NextUpdate = Get-IniValue -file ".\servers\$($ServerName).INI" -category "Schedule" -key "NextUpdate"
   if([string]::IsNullOrEmpty($NextUpdate)) {
     $NextUpdate = $OldDate
@@ -29,6 +36,7 @@ function Get-TaskConfig {
   }
 
   return [hashtable] @{
+    NextBackup  = $NextBackup;
     NextAlive   = $NextAlive;
     NextUpdate  = $NextUpdate;
     NextRestart = $NextRestart;

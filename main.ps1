@@ -127,7 +127,7 @@ if ($Task) {
   }
 
   if ($Server.AutoRestartOnCrash) {
-    if (($TasksSchedule.NextAlive) -le (Get-Date)) {
+    if ((($TasksSchedule.NextAlive) -le (Get-Date)) -or ($Global.AliveCheckFrequency -le $Global.TaskCheckFrequency)) {
       Write-ScriptMsg "Checking Alive State"
       if (-not (Get-ServerProcess)) {
         Write-ScriptMsg "Server is Dead, Restarting..."
@@ -147,7 +147,7 @@ if ($Task) {
   }
 
   if ($Server.AutoUpdates) {
-    if (($TasksSchedule.NextUpdate) -le (Get-Date)) {
+    if ((($TasksSchedule.NextUpdate) -le (Get-Date)) -or ($Global.UpdateCheckFrequency -le $Global.TaskCheckFrequency)) {
       Write-ScriptMsg "Checking on steamCMD if updates are available for $($Server.Name)..."
       if (Request-Update) {
         Write-ScriptMsg "Updates are available for $($Server.Name), Proceeding with update process..."
@@ -223,8 +223,17 @@ if (-not $FreshInstall) {
 
 #If not a fresh install and Backups are enabled, run backups.
 if ($Backups.Use -and -not $FreshInstall) {
-  Write-ScriptMsg "Verifying Backups..."
-  Backup-Server
+  if ((($TasksSchedule.NextBackup) -le (Get-Date)) -or ($Global.BackupCheckFrequency -le $Global.TaskCheckFrequency)) {
+    Write-ScriptMsg "Verifying Backups..."
+    Backup-Server
+    Update-TaskConfig -Backup
+  }
+  else {
+    Write-ScriptMsg "Too soon for Backup"
+  }
+}
+else {
+  Write-ScriptMsg "Backups are disabled or this is a fresh installation."
 }
 
 #---------------------------------------------------------
